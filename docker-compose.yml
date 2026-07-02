@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: message-scheduler-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  scheduler:
+    build: .
+    container_name: message-scheduling-service
+    ports:
+      - '4000:4000'
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      QUEUE_NAME: delayed-messages
+      WORKER_CONCURRENCY: 5
+      JOB_ATTEMPTS: 5
+      JOB_BACKOFF_DELAY_MS: 5000
+      REMOVE_ON_COMPLETE_AGE_SECONDS: 3600
+      REMOVE_ON_FAIL_AGE_SECONDS: 86400
+      MAIN_BACKEND_URL: http://host.docker.internal:5001
+      MAIN_BACKEND_WEBHOOK_PATH: /api/messages/delayed/send
+      WEBHOOK_TIMEOUT_MS: 10000
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+volumes:
+  redis-data:

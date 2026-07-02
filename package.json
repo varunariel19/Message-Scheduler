@@ -1,0 +1,38 @@
+{
+  "name": "message-scheduling-service",
+  "version": "1.0.0",
+  "description": "Standalone Node.js/TypeScript service for scheduling delayed messages via BullMQ, calling a .NET backend webhook when jobs fire.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node --use-system-ca dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "lint": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "overrides": {
+    "ioredis": "^5.4.1"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bullmq": "^5.12.12",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ioredis": "^5.4.1",
+    "pino": "^9.4.0",
+    "pino-pretty": "^11.2.2",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.15",
+    "@types/uuid": "^10.0.0",
+    "rimraf": "^6.0.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.4"
+  }
+}
